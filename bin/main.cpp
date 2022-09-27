@@ -1,6 +1,5 @@
-
-#include <lib/number.h>
 #include <iostream>
+#include <lib/number.h>
 
 int main() {
     uint2022_t value;

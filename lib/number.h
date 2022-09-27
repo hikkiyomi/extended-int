@@ -1,10 +1,15 @@
 #pragma once
+#include <bitset>
 #include <cinttypes>
+#include <cstring>
 #include <iostream>
 
-
 struct uint2022_t {
-    // implement
+    std::bitset<2100> bits; // reserved some bits for handling integer overflow
+
+    uint2022_t();
+    uint2022_t(uint32_t x);
+    uint2022_t(const char* buff);
 };
 
 static_assert(sizeof(uint2022_t) <= 300, "Size of uint2022_t must be no higher than 300 bytes");
@@ -26,3 +31,5 @@ bool operator==(const uint2022_t& lhs, const uint2022_t& rhs);
 bool operator!=(const uint2022_t& lhs, const uint2022_t& rhs);
 
 std::ostream& operator<<(std::ostream& stream, const uint2022_t& value);
+
+char* to_string(const uint2022_t& x);
