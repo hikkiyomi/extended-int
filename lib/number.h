@@ -40,8 +40,57 @@ public:
         return length_;
     }
 
+    bool operator<(const BigInteger& other) const {
+        if (size() == other.size()) {
+            for (size_t i = 0; i < size(); ++i) {
+                int cur_digit = get_digit(i);
+                int other_cur_digit = other.get_digit(i);
+
+                if (cur_digit == other_cur_digit) continue;
+                
+                return cur_digit < other_cur_digit;
+            }
+
+            return false;
+        }
+
+        return size() < other.size();
+    }
+
+    bool operator==(const BigInteger& other) const {
+        if (size() == other.size()) {
+            for (size_t i = 0; i < size(); ++i) {
+                if (get_digit(i) != other.get_digit(i)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    bool operator>(const BigInteger& other) const {
+        if (size() == other.size()) {
+            for (size_t i = 0; i < size(); ++i) {
+                int cur_digit = get_digit(i);
+                int other_cur_digit = other.get_digit(i);
+
+                if (cur_digit == other_cur_digit) continue;
+                
+                return cur_digit > other_cur_digit;
+            }
+
+            return false;
+        }
+
+        return size() > other.size();
+    }
+
     BigInteger operator+(const BigInteger& other) {
-        size_t a_size = size(), b_size = other.size();
+        size_t a_size = size();
+        size_t b_size = other.size();
         size_t sum_length = std::max(a_size, b_size) + 1;
         std::string sum;
         unsigned short carry = 0;
@@ -73,6 +122,39 @@ public:
         std::reverse(sum.begin(), sum.end());
 
         return BigInteger(sum);
+    }
+
+    BigInteger operator-(const BigInteger& other) {
+        assert(!(*this < other)); // assume that current value > other value, because this operation
+                                  // will be used only in cases when *this >= other
+        size_t a_size = size();
+        size_t b_size = other.size();
+        std::string result;
+        unsigned short carry = 0;
+
+        for (size_t i = 0; i < a_size; ++i) {
+            unsigned short subtract = carry;
+            carry = 0;
+
+            if (i < b_size) {
+                subtract += other.get_digit(b_size - 1 - i);
+            }
+
+            short add_to_result = get_digit(a_size - 1 - i) - subtract;
+
+            if (add_to_result < 0) {
+                carry = 1;
+                add_to_result += 10;
+            }
+
+            assert(add_to_result >= 0);
+
+            result += to_char(add_to_result);
+        }
+
+        std::reverse(result.begin(), result.end());
+
+        return BigInteger(result);
     }
 private:
     std::string digits_;
