@@ -53,3 +53,8 @@ std::ostream& operator<<(std::ostream& stream, const uint2022_t& value) {
 
     return stream;
 }
+
+std::ostream& operator<<(std::ostream& stream, const BigInteger& value) {
+    stream << value.get_string();
+    return stream;
+}
