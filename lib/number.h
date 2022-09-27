@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cinttypes>
 #include <iostream>
+#include <vector>
 
 class BigInteger {
     static char to_char(unsigned short i) {
@@ -88,45 +89,48 @@ public:
         return size() > other.size();
     }
 
+    void multiply_by_ten() {
+        digits_ += "0";
+        ++length_;
+    }
+
     BigInteger operator+(const BigInteger& other) {
         size_t a_size = size();
         size_t b_size = other.size();
-        size_t sum_length = std::max(a_size, b_size) + 1;
-        std::string sum;
+        size_t max_size = std::max(a_size, b_size);
+        std::string result;
         unsigned short carry = 0;
 
-        for (size_t i = 0; i < sum_length; ++i) {
+        for (size_t i = 0; i < max_size; ++i) {
             unsigned short digit_sum = 100;
 
-            if (i >= size() && i >= other.size()) {
-                if (carry != 0) {
-                    sum += '1';
-                }
-
-                continue;
-            } else if (i >= size()) {
-                digit_sum = other.get_digit(b_size - i - 1);
-            } else if (i >= other.size()) {
-                digit_sum = get_digit(a_size - i - 1);
+            if (i >= a_size) {
+                digit_sum = other.get_digit(b_size - 1 - i);
+            } else if (i >= b_size) {
+                digit_sum = get_digit(a_size - 1 - i);
             } else {
-                digit_sum = get_digit(a_size - i - 1) + other.get_digit(b_size - i - 1);
+                digit_sum = get_digit(a_size - 1 - i) + other.get_digit(b_size - 1 - i);
             }
 
-            assert(digit_sum != 100);
+            assert(digit_sum < 100);
 
             digit_sum += carry;
-            sum += std::string(1, to_char(digit_sum % 10));
+            result += std::to_string(digit_sum % 10);
             carry = digit_sum / 10;
         }
 
-        std::reverse(sum.begin(), sum.end());
+        if (carry > 0) {
+            result += std::to_string(carry);
+        }
 
-        return BigInteger(sum);
+        std::reverse(result.begin(), result.end());
+
+        return BigInteger(result);
     }
 
     BigInteger operator-(const BigInteger& other) {
-        assert(!(*this < other)); // assume that current value > other value, because this operation
-                                  // will be used only in cases when *this >= other
+        assert(!(*this < other)); // assume that current value >= other value, because this operation
+                                  // will be used only in these cases
         size_t a_size = size();
         size_t b_size = other.size();
         std::string result;
@@ -149,12 +153,66 @@ public:
 
             assert(add_to_result >= 0);
 
-            result += to_char(add_to_result);
+            result += std::to_string(add_to_result);
         }
 
         std::reverse(result.begin(), result.end());
 
         return BigInteger(result);
+    }
+
+    BigInteger operator*(const unsigned short k) {
+        assert(k < 10);
+
+        if (k == 0 || get_string() == "0") {
+            return BigInteger("0");
+        }
+        
+        std::string result;
+        unsigned short carry = 0;
+
+        for (size_t i = 0; i < length_; ++i) {
+            unsigned short digit = get_digit(length_ - 1 - i);
+            unsigned short add_to_result = digit * k + carry;
+            
+            result += std::to_string(add_to_result % 10);
+            carry = add_to_result / 10;
+        }
+
+        if (carry > 0) {
+            result += std::to_string(carry);
+        }
+
+        std::reverse(result.begin(), result.end());
+        
+        return BigInteger(result);
+    }
+
+    BigInteger operator*(const BigInteger& other) {
+        if (get_string() == "0" || other.get_string() == "0") {
+            return BigInteger("0");
+        }
+
+        std::vector<BigInteger> to_sum;
+        unsigned zeros = 0;
+        
+        for (size_t i = 0; i < other.size(); ++i) {
+            to_sum.emplace_back((*this) * other.get_digit(i));
+            
+            for (size_t _ = 0; _ < zeros; ++_) {
+                to_sum.back().multiply_by_ten();
+            }
+
+            ++zeros;
+        }
+
+        BigInteger sum = to_sum.front();
+
+        for (size_t i = 1; i < to_sum.size(); ++i) {
+            sum = sum + to_sum[i];
+        }
+
+        return sum;
     }
 private:
     std::string digits_;
