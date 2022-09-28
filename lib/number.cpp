@@ -76,7 +76,30 @@ uint2022_t operator*(const uint2022_t& lhs, const uint2022_t& rhs) {
 }
 
 uint2022_t operator/(const uint2022_t& lhs, const uint2022_t& rhs) {
-    return uint2022_t();
+    uint2022_t result;
+    uint2022_t current_buffer;
+
+    for (size_t i = 0; i < kNumberOfBits; ++i) {
+        current_buffer = (current_buffer << 1) + uint2022_t(lhs.bits[kNumberOfBits - 1 - i]);
+        result = result << 1;
+        
+        if (current_buffer < rhs) {
+            continue;
+        }
+
+        result = result + uint2022_t(1);
+        current_buffer = current_buffer - rhs;
+    }
+
+    return result;
+}
+
+uint2022_t operator%(const uint2022_t& lhs, const uint2022_t& rhs) {
+    if (lhs < rhs) {
+        return lhs;
+    }
+
+    return lhs - (lhs / rhs) * rhs;
 }
 
 bool operator<(const uint2022_t& lhs, const uint2022_t& rhs) {
