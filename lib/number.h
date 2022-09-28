@@ -319,3 +319,5 @@ bool operator!=(const uint2022_t& lhs, const uint2022_t& rhs);
 std::ostream& operator<<(std::ostream& stream, const uint2022_t& value);
 
 std::ostream& operator<<(std::ostream& stream, const BigInteger& value);
+
+uint2022_t operator<<(const uint2022_t& lhs, const size_t rhs);

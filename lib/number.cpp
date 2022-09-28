@@ -21,9 +21,9 @@ uint2022_t::uint2022_t(const char* buff) {
     }
 }
 
-uint2022_t::uint2022_t(const std::bitset<kNumberOfBits>& _bits) {
-    bits = _bits;
-}
+uint2022_t::uint2022_t(const std::bitset<kNumberOfBits>& _bits) 
+    : bits(_bits)
+{}
 
 uint2022_t from_uint(uint32_t i) {
     return uint2022_t(i);
@@ -53,16 +53,26 @@ uint2022_t operator+(const uint2022_t& lhs, const uint2022_t& rhs) {
 }
 
 uint2022_t operator-(const uint2022_t& lhs, const uint2022_t& rhs) {
-    uint2022_t extra = rhs;
+    uint2022_t flipped_rhs = rhs;
     
-    extra.bits.flip();
-    extra = extra + uint2022_t(1);
+    flipped_rhs.bits.flip();
+    flipped_rhs = flipped_rhs + uint2022_t(1);
 
-    return uint2022_t(lhs + extra);
+    return uint2022_t(lhs + flipped_rhs);
 }
 
 uint2022_t operator*(const uint2022_t& lhs, const uint2022_t& rhs) {
-    return uint2022_t();
+    uint2022_t result;
+
+    for (size_t i = 0; i < kNumberOfBits; ++i) {
+        if (lhs.bits[i] == 1) {
+            uint2022_t to_sum = rhs;
+            to_sum = to_sum << i;
+            result = result + to_sum;
+        }
+    }
+
+    return result;
 }
 
 uint2022_t operator/(const uint2022_t& lhs, const uint2022_t& rhs) {
@@ -70,11 +80,17 @@ uint2022_t operator/(const uint2022_t& lhs, const uint2022_t& rhs) {
 }
 
 bool operator==(const uint2022_t& lhs, const uint2022_t& rhs) {
-    return false;
+    for (size_t i = 0; i < kNumberOfBits; ++i) {
+        if (lhs.bits[i] != rhs.bits[i]) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 bool operator!=(const uint2022_t& lhs, const uint2022_t& rhs) {
-    return false;
+    return !(lhs == rhs);
 }
 
 std::string convert_to_string(const uint2022_t& x) {
@@ -101,4 +117,18 @@ std::ostream& operator<<(std::ostream& stream, const uint2022_t& value) {
 std::ostream& operator<<(std::ostream& stream, const BigInteger& value) {
     stream << value.get_string();
     return stream;
+}
+
+uint2022_t operator<<(const uint2022_t& lhs, const size_t rhs) {
+    if (kNumberOfBits <= rhs) {
+        return uint2022_t();
+    }
+    
+    std::bitset<kNumberOfBits> result;
+
+    for (size_t i = rhs; i < kNumberOfBits; ++i) {
+        result.set(i, lhs.bits[i - rhs]);
+    }
+
+    return uint2022_t(result);
 }
