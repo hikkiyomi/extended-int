@@ -5,6 +5,10 @@
 #include <cinttypes>
 #include <iostream>
 #include <vector>
+#include <stdexcept>
+
+const size_t kNumberOfBits = 2100;
+const size_t kOverflowBitIndex = 2022;
 
 class BigInteger {
     static char to_char(unsigned short i) {
@@ -26,6 +30,14 @@ public:
     BigInteger(const std::string& buff)
         : digits_(buff)
     {
+        while (!digits_.empty() && digits_.front() == '0') {
+            digits_ = digits_.substr(1);
+        }
+
+        if (digits_.empty()) {
+            digits_ = "0";
+        }
+
         length_ = digits_.size();
     }
 
@@ -47,7 +59,9 @@ public:
                 int cur_digit = get_digit(i);
                 int other_cur_digit = other.get_digit(i);
 
-                if (cur_digit == other_cur_digit) continue;
+                if (cur_digit == other_cur_digit) {
+                    continue;
+                }
                 
                 return cur_digit < other_cur_digit;
             }
@@ -78,7 +92,9 @@ public:
                 int cur_digit = get_digit(i);
                 int other_cur_digit = other.get_digit(i);
 
-                if (cur_digit == other_cur_digit) continue;
+                if (cur_digit == other_cur_digit) {
+                    continue;
+                }
                 
                 return cur_digit > other_cur_digit;
             }
@@ -87,6 +103,10 @@ public:
         }
 
         return size() > other.size();
+    }
+
+    bool operator!=(const BigInteger& other) {
+        return !((*this) == other);
     }
 
     void multiply_by_ten() {
@@ -129,8 +149,11 @@ public:
     }
 
     BigInteger operator-(const BigInteger& other) {
-        assert(!(*this < other)); // assume that current value >= other value, because this operation
-                                  // will be used only in these cases
+        // assume that current value >= other value, because this operation
+        // will be used only in these cases
+
+        assert(!(*this < other)); 
+
         size_t a_size = size();
         size_t b_size = other.size();
         std::string result;
@@ -214,17 +237,66 @@ public:
 
         return sum;
     }
+
+    BigInteger operator/(const unsigned short k) {
+        if (k == 0) {
+            throw std::overflow_error("Dividing by zero");
+        }
+
+        std::string result;
+        unsigned short buff = 0;
+
+        for (size_t i = 0; i < size(); ++i) {
+            buff = buff * 10 + get_digit(i);
+            
+            if (buff < k) {
+                if (!result.empty()) {
+                    result += "0";
+                }
+
+                continue;
+            }
+
+            result += std::to_string(buff / k);
+            buff %= k;
+        }
+
+        if (result.empty()) {
+            result = "0";
+        }
+
+        return BigInteger(result);
+    }
+
+    BigInteger to_binary() {
+        std::string result;
+        BigInteger current = *this;
+        BigInteger endpoint = BigInteger("0");
+
+        while (current != endpoint) {
+            BigInteger division_result = current / 2;
+            BigInteger remaining = current - division_result * 2;
+            result += remaining.get_string();
+            current = division_result;
+        }
+
+        std::reverse(result.begin(), result.end());
+
+        return result;
+    }
 private:
     std::string digits_;
     size_t length_;
 };
 
 struct uint2022_t {
-    std::bitset<2100> bits; // reserved some bits for handling integer overflow
+    std::bitset<kNumberOfBits> bits;
+    // reserved some more bits for handling integer overflow
 
     uint2022_t();
     uint2022_t(uint32_t x);
     uint2022_t(const char* buff);
+    uint2022_t(const std::bitset<kNumberOfBits>& _bits);
 };
 
 static_assert(sizeof(uint2022_t) <= 300, "Size of uint2022_t must be no higher than 300 bytes");
@@ -246,7 +318,5 @@ bool operator==(const uint2022_t& lhs, const uint2022_t& rhs);
 bool operator!=(const uint2022_t& lhs, const uint2022_t& rhs);
 
 std::ostream& operator<<(std::ostream& stream, const uint2022_t& value);
-
-char* to_string(const uint2022_t& x);
 
 std::ostream& operator<<(std::ostream& stream, const BigInteger& value);

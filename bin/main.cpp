@@ -2,17 +2,10 @@
 #include <lib/number.h>
 
 int main() {
-    // uint2022_t value;
-    // std::cout << value << std::endl;
+    uint2022_t x("2138126357891263579812634124");
+    uint2022_t y("2581623856187236598716237489612389746");
 
-    BigInteger x("41528612387617284612987624123412");
-    BigInteger y("51872678967867861211111111111111111");
-
-    std::cout << x << std::endl;
-    std::cout << y << std::endl;
-
-    BigInteger sum = x + y;
-    std::cout << sum << std::endl;
+    std::cout << x + y;
 
     return 0;
 }
