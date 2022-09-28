@@ -67,6 +67,7 @@ uint2022_t operator*(const uint2022_t& lhs, const uint2022_t& rhs) {
     for (size_t i = 0; i < kNumberOfBits; ++i) {
         if (lhs.bits[i] == 1) {
             uint2022_t to_sum = rhs;
+
             to_sum = to_sum << i;
             result = result + to_sum;
         }
@@ -100,6 +101,20 @@ uint2022_t operator%(const uint2022_t& lhs, const uint2022_t& rhs) {
     }
 
     return lhs - (lhs / rhs) * rhs;
+}
+
+uint2022_t operator<<(const uint2022_t& lhs, const size_t rhs) {
+    if (kNumberOfBits <= rhs) {
+        return uint2022_t();
+    }
+    
+    std::bitset<kNumberOfBits> result;
+
+    for (size_t i = rhs; i < kNumberOfBits; ++i) {
+        result.set(i, lhs.bits[i - rhs]);
+    }
+
+    return uint2022_t(result);
 }
 
 bool operator<(const uint2022_t& lhs, const uint2022_t& rhs) {
@@ -166,18 +181,4 @@ std::ostream& operator<<(std::ostream& stream, const uint2022_t& value) {
 std::ostream& operator<<(std::ostream& stream, const BigInteger& value) {
     stream << value.get_string();
     return stream;
-}
-
-uint2022_t operator<<(const uint2022_t& lhs, const size_t rhs) {
-    if (kNumberOfBits <= rhs) {
-        return uint2022_t();
-    }
-    
-    std::bitset<kNumberOfBits> result;
-
-    for (size_t i = rhs; i < kNumberOfBits; ++i) {
-        result.set(i, lhs.bits[i - rhs]);
-    }
-
-    return uint2022_t(result);
 }

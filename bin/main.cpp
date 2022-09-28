@@ -2,10 +2,8 @@
 #include <lib/number.h>
 
 int main() {
-    uint2022_t x("0");
-    uint2022_t y("124124124124124124124124124124124124124124");
-
-    std::cout << x * y;
+    uint2022_t value;
+    std::cout << value << std::endl;
 
     return 0;
 }

@@ -104,7 +104,7 @@ public:
         return size() > other.size();
     }
 
-    bool operator!=(const BigInteger& other) {
+    bool operator!=(const BigInteger& other) const {
         return !((*this) == other);
     }
 
@@ -113,7 +113,7 @@ public:
         ++length_;
     }
 
-    BigInteger operator+(const BigInteger& other) {
+    BigInteger operator+(const BigInteger& other) const {
         size_t a_size = size();
         size_t b_size = other.size();
         size_t max_size = std::max(a_size, b_size);
@@ -147,7 +147,7 @@ public:
         return BigInteger(result);
     }
 
-    BigInteger operator-(const BigInteger& other) {
+    BigInteger operator-(const BigInteger& other) const {
         // assume that current value >= other value, because this operation
         // will be used only in these cases
 
@@ -183,7 +183,7 @@ public:
         return BigInteger(result);
     }
 
-    BigInteger operator*(const unsigned short k) {
+    BigInteger operator*(const unsigned short k) const {
         assert(k < 10);
 
         if (k == 0 || get_string() == "0") {
@@ -210,7 +210,7 @@ public:
         return BigInteger(result);
     }
 
-    BigInteger operator*(const BigInteger& other) {
+    BigInteger operator*(const BigInteger& other) const {
         if (get_string() == "0" || other.get_string() == "0") {
             return BigInteger("0");
         }
@@ -314,6 +314,8 @@ uint2022_t operator/(const uint2022_t& lhs, const uint2022_t& rhs);
 
 uint2022_t operator%(const uint2022_t& lhs, const uint2022_t& rhs);
 
+uint2022_t operator<<(const uint2022_t& lhs, const size_t rhs);
+
 bool operator<(const uint2022_t& lhs, const uint2022_t& rhs);
 
 bool operator>(const uint2022_t& lhs, const uint2022_t& rhs);
@@ -325,5 +327,3 @@ bool operator!=(const uint2022_t& lhs, const uint2022_t& rhs);
 std::ostream& operator<<(std::ostream& stream, const uint2022_t& value);
 
 std::ostream& operator<<(std::ostream& stream, const BigInteger& value);
-
-uint2022_t operator<<(const uint2022_t& lhs, const size_t rhs);
