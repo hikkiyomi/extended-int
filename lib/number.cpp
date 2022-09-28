@@ -79,14 +79,40 @@ uint2022_t operator/(const uint2022_t& lhs, const uint2022_t& rhs) {
     return uint2022_t();
 }
 
-bool operator==(const uint2022_t& lhs, const uint2022_t& rhs) {
+bool operator<(const uint2022_t& lhs, const uint2022_t& rhs) {
     for (size_t i = 0; i < kNumberOfBits; ++i) {
-        if (lhs.bits[i] != rhs.bits[i]) {
+        if (lhs.bits[kNumberOfBits - 1 - i] == rhs.bits[kNumberOfBits - 1 - i]) {
+            continue;
+        }
+
+        if (lhs.bits[kNumberOfBits - 1 - i] < rhs.bits[kNumberOfBits - 1 - i]) {
+            return true;
+        } else {
             return false;
         }
     }
 
-    return true;
+    return false;
+}
+
+bool operator>(const uint2022_t& lhs, const uint2022_t& rhs) {
+    for (size_t i = 0; i < kNumberOfBits; ++i) {
+        if (lhs.bits[kNumberOfBits - 1 - i] == rhs.bits[kNumberOfBits - 1 - i]) {
+            continue;
+        }
+
+        if (lhs.bits[kNumberOfBits - 1 - i] > rhs.bits[kNumberOfBits - 1 - i]) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    return false;
+}
+
+bool operator==(const uint2022_t& lhs, const uint2022_t& rhs) {
+    return lhs.bits == rhs.bits;
 }
 
 bool operator!=(const uint2022_t& lhs, const uint2022_t& rhs) {

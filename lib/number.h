@@ -312,6 +312,10 @@ uint2022_t operator*(const uint2022_t& lhs, const uint2022_t& rhs);
 
 uint2022_t operator/(const uint2022_t& lhs, const uint2022_t& rhs);
 
+bool operator<(const uint2022_t& lhs, const uint2022_t& rhs);
+
+bool operator>(const uint2022_t& lhs, const uint2022_t& rhs);
+
 bool operator==(const uint2022_t& lhs, const uint2022_t& rhs);
 
 bool operator!=(const uint2022_t& lhs, const uint2022_t& rhs);
