@@ -49,15 +49,16 @@ uint2022_t operator+(const uint2022_t& lhs, const uint2022_t& rhs) {
         carry = new_carry;
     }
 
-    for (size_t i = kOverflowBitIndex; i < kNumberOfBits; ++i) {
-        result.set(i, 0);
-    }
-
     return uint2022_t(result);
 }
 
 uint2022_t operator-(const uint2022_t& lhs, const uint2022_t& rhs) {
-    return uint2022_t();
+    uint2022_t extra = rhs;
+    
+    extra.bits.flip();
+    extra = extra + uint2022_t(1);
+
+    return uint2022_t(lhs + extra);
 }
 
 uint2022_t operator*(const uint2022_t& lhs, const uint2022_t& rhs) {

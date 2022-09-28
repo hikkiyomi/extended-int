@@ -7,8 +7,7 @@
 #include <vector>
 #include <stdexcept>
 
-const size_t kNumberOfBits = 2100;
-const size_t kOverflowBitIndex = 2022;
+const size_t kNumberOfBits = 2022;
 
 class BigInteger {
     static char to_char(unsigned short i) {
