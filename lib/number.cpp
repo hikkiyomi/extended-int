@@ -356,6 +356,10 @@ uint2022_t operator*(const uint2022_t& lhs, const uint2022_t& rhs) {
 }
 
 uint2022_t operator/(const uint2022_t& lhs, const uint2022_t& rhs) {
+    if (rhs.bits.none()) {
+        throw std::overflow_error("Dividing by zero");
+    }
+
     uint2022_t result;
     uint2022_t current_buffer;
 
