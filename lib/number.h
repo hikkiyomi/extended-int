@@ -1,11 +1,12 @@
 #pragma once
+
 #include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cinttypes>
 #include <iostream>
-#include <vector>
 #include <stdexcept>
+#include <vector>
 
 const size_t kNumberOfBits = 2022;
 
