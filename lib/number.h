@@ -12,7 +12,6 @@ const size_t kNumberOfBits = 2022;
 
 struct uint2022_t {
     std::bitset<kNumberOfBits> bits;
-    // reserved some more bits for handling integer overflow
 
     uint2022_t();
     uint2022_t(uint32_t x);
@@ -47,3 +46,5 @@ bool operator==(const uint2022_t& lhs, const uint2022_t& rhs);
 bool operator!=(const uint2022_t& lhs, const uint2022_t& rhs);
 
 std::ostream& operator<<(std::ostream& stream, const uint2022_t& value);
+
+std::istream& operator>>(std::istream& stream, uint2022_t& value);

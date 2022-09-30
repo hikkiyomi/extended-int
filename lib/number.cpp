@@ -77,22 +77,7 @@ public:
     }
 
     bool operator>(const BigInteger& other) const {
-        if (size() == other.size()) {
-            for (size_t i = 0; i < size(); ++i) {
-                int cur_digit = get_digit(i);
-                int other_cur_digit = other.get_digit(i);
-
-                if (cur_digit == other_cur_digit) {
-                    continue;
-                }
-                
-                return cur_digit > other_cur_digit;
-            }
-
-            return false;
-        }
-
-        return size() > other.size();
+        return !((*this) < other) && (*this) != other;
     }
 
     bool operator!=(const BigInteger& other) const {
@@ -266,6 +251,7 @@ public:
         while (current != endpoint) {
             BigInteger division_result = current / 2;
             BigInteger remaining = current - division_result * 2;
+
             result += remaining.get_string();
             current = division_result;
         }
@@ -292,6 +278,11 @@ uint2022_t::uint2022_t(uint32_t x) {
 uint2022_t::uint2022_t(const char* buff) {
     std::string input_bits = BigInteger(buff).to_binary().get_string();
     size_t input_length = input_bits.size();
+    
+    if (input_length > kNumberOfBits) {
+        bits.set();
+        return;
+    }
     
     for (size_t i = 0; i < input_length; ++i) {
         if (input_bits[i] == '1') {
@@ -457,6 +448,15 @@ std::string convert_to_string(const uint2022_t& x) {
 
 std::ostream& operator<<(std::ostream& stream, const uint2022_t& value) {
     stream << convert_to_string(value);
+
+    return stream;
+}
+
+std::istream& operator>>(std::istream& stream, uint2022_t& value) {
+    std::string input;
+    
+    stream >> input;
+    value = uint2022_t(input.c_str());
 
     return stream;
 }
