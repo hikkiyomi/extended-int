@@ -408,19 +408,7 @@ bool operator<(const uint2022_t& lhs, const uint2022_t& rhs) {
 }
 
 bool operator>(const uint2022_t& lhs, const uint2022_t& rhs) {
-    for (size_t i = 0; i < kNumberOfBits; ++i) {
-        if (lhs.bits[kNumberOfBits - 1 - i] == rhs.bits[kNumberOfBits - 1 - i]) {
-            continue;
-        }
-
-        if (lhs.bits[kNumberOfBits - 1 - i] > rhs.bits[kNumberOfBits - 1 - i]) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    return false;
+    return !(lhs < rhs) && lhs != rhs;
 }
 
 bool operator==(const uint2022_t& lhs, const uint2022_t& rhs) {
